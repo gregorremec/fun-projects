@@ -1,4 +1,4 @@
-
+# Gregor Remec - boids implementation with pygame
 import pygame
 import numpy as np
 import random
