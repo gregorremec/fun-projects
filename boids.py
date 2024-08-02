@@ -2,7 +2,7 @@
 import pygame
 import numpy as np
 import random
-import time
+import math
 
 class Boid():
 
@@ -17,6 +17,13 @@ class Boid():
 
         self.velocity = np.array([random.uniform(0, 1), random.uniform(0, 1)])
         self.acceleration = np.array([0, 0])
+
+    
+    def distanceTo(self, other):
+
+        p1 = (other.x_pos - self.x_pos)**2
+        p2 = (other.y_pos - self.y_pos)**2
+        return math.sqrt((p1 + p2))
         
 
     def update(self):
