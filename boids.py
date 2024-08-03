@@ -16,7 +16,7 @@ class Boid():
         self.y_pos = random.randrange(0, 500)
 
         self.velocity = np.array([random.uniform(0, 1), random.uniform(0, 1)])
-        self.acceleration = np.array([0, 0])
+        self.acceleration = np.array([random.uniform(0, 1), random.uniform(0, 1)])
 
     
     def distanceTo(self, other):
@@ -28,14 +28,33 @@ class Boid():
 
     def update(self):
 
+
         self.x_pos += self.velocity[0]
         self.y_pos += self.velocity[1]
+
         self.velocity += self.acceleration
 
-        if self.x_pos < 0 or self.x_pos > 500:
-            self.velocity[0] *= -1
-        elif self.y_pos < 0 or self.y_pos > 500:
-            self.velocity[1] *= -1
+        if self.velocity[0] > 1:
+            self.velocity[0] = 1
+        elif self.velocity[0] < -1:
+            self.velocity[0] = -1
+
+        if self.velocity[1] > 1:
+            self.velocity[1] = 1
+        elif self.velocity[1] < -1:
+            self.velocity[1] = -1
+
+        self.acceleration[0] *= .08
+        self.acceleration[1] *= .08
+
+        if self.x_pos < 0:
+            self.x_pos = 500
+        elif self.x_pos > 500:
+            self.x_pos = 0
+        if self.y_pos < 0:
+            self.y_pos = 500
+        elif self.y_pos > 500:
+            self.y_pos = 0
 
         pygame.draw.circle(canvas, 0xffffff, (self.x_pos, self.y_pos), 4)
 
