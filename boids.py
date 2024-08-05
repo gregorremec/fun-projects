@@ -4,34 +4,40 @@ import numpy as np
 import random
 import math
 
+SCREEN_SIZE = 700
+
 class Boid():
 
-    x_pos = 0
-    y_pos = 0
+    position = None
     velocity = None
     acceleration = None
 
     def __init__(self):
-        self.x_pos = random.randrange(0, 500)
-        self.y_pos = random.randrange(0, 500)
 
+        self.position = np.array([float(random.randrange(0, SCREEN_SIZE)), float(random.randrange(0, SCREEN_SIZE))])
         self.velocity = np.array([random.uniform(0, 1), random.uniform(0, 1)])
         self.acceleration = np.array([random.uniform(0, 1), random.uniform(0, 1)])
 
     
     def distanceTo(self, other):
 
-        p1 = (other.x_pos - self.x_pos)**2
-        p2 = (other.y_pos - self.y_pos)**2
+        p1 = (other.position[0] - self.position[1])**2
+        p2 = (other.position[0] - self.position[1])**2
         return math.sqrt((p1 + p2))
-        
+    
+    def align(self, flock):
 
-    def update(self):
+        steeringForce = np.array([0.0,0.0])
 
+        for boid in flock:
+            steeringForce += boid.velocity
 
-        self.x_pos += self.velocity[0]
-        self.y_pos += self.velocity[1]
+        return steeringForce / len(flock)
 
+    def update(self, flock):
+
+        self.acceleration = self.align(flock)
+        self.position += self.velocity
         self.velocity += self.acceleration
 
         if self.velocity[0] > 1:
@@ -44,26 +50,23 @@ class Boid():
         elif self.velocity[1] < -1:
             self.velocity[1] = -1
 
-        self.acceleration[0] *= .08
-        self.acceleration[1] *= .08
+        if self.position[0] < 0:
+            self.position[0] = SCREEN_SIZE
+        elif self.position[0] > SCREEN_SIZE:
+            self.position[0] = 0
+        if self.position[1] < 0:
+            self.position[1] = SCREEN_SIZE
+        elif self.position[1] > SCREEN_SIZE:
+            self.position[1] = 0
 
-        if self.x_pos < 0:
-            self.x_pos = 500
-        elif self.x_pos > 500:
-            self.x_pos = 0
-        if self.y_pos < 0:
-            self.y_pos = 500
-        elif self.y_pos > 500:
-            self.y_pos = 0
-
-        pygame.draw.circle(canvas, 0xffffff, (self.x_pos, self.y_pos), 4)
+        pygame.draw.circle(canvas, 0xffffff, (self.position[0], self.position[1]), 4)
 
 
 
 
 pygame.init()
 
-canvas = pygame.display.set_mode((500, 500))
+canvas = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
 
 pygame.display.set_caption("FREAKING BOIDS")
 
@@ -84,6 +87,6 @@ while not exit:
     canvas.fill((0, 0, 0))
         
     for boid in boid_list:
-        boid.update()
+        boid.update(boid_list)
 
     pygame.display.flip()
