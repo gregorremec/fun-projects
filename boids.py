@@ -30,7 +30,8 @@ class Boid():
         steeringForce = np.array([0.0,0.0])
 
         for boid in flock:
-            steeringForce += boid.velocity
+            if self != boid:
+                steeringForce += boid.velocity
 
         return steeringForce / len(flock)
 
